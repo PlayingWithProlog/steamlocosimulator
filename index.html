@@ -1,5 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<html>
+<head>
+<script src="tau-prolog.js"></script>
+</head>
+<body>
+<div id="block-a" class="circle">content a</div>
+<div id="block-b" class="circle">content b</div>
+<div id="block-c" class="square">content c</div>
+
 
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -774,3 +781,46 @@
        inkscape:label="gagehandholder" />
   </g>
 </svg>
+<script id="likes.pl" type="text/prolog">
+:- use_module(library(dom)).
+
+    likes(sam, salad).
+    likes(dean, pie).
+    likes(sam, apples).
+    likes(dean, whiskey).
+</script>
+
+<script type="text/javascript">
+
+var callback = 
+    function(X){
+        if(X)console.log(X.links["X"].id);
+        else console.log("false");
+    };
+
+var session = pl.create();
+session.consult("likes.pl");
+
+session.query("likes(sam, X).");
+session.answer(callback); // X = salad ;
+session.answer(callback); // X = apples ;
+session.answer(callback); // false.
+
+
+session.query("get_by_tag(div, B), html(B, X), add_class(B, bytag).");
+session.answer(); // {B/<html>(block-a), X/'content a'}
+session.answer(); // {B/<html>(block-b), X/'content b'}
+session.answer(); // {B/<html>(block-c), X/'content c'}
+session.answer(); // false
+
+session.query("get_by_class(circle, B), html(B, something), add_class(B, byclass).");
+session.answer(); // {B/<html>(block-a), X/'content a'}
+session.answer(); // {B/<html>(block-b), X/'content b'}
+session.answer(); // false
+
+session.query("get_by_id('g4826', B), attr(B, display, none).");
+session.answer();
+
+</script>
+</body>
+</html>
