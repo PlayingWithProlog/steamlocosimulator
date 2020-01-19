@@ -789,12 +789,6 @@
 <script id="app.pl" type="text/prolog">
 :- use_module(library(dom)).
 
-toggle_visibility(E, visible) :- style(E, visibility, hidden).
-toggle_visibility(E, hidden)  :- style(E, visibility, visible).
-
-toggle_visibility(E) :- style(E, visibility, V), !,  toggle_visibility(E, V).
-toggle_visibility(E) :- toggle_visibility(E, visible).
-
 </script>
 
 <script type="text/javascript">
@@ -802,7 +796,7 @@ const session = pl.create();
 session.consult("app.pl");
 
 const testToggle = () => {
-  session.query("get_by_id('g4826', E), toggle_visibility(E).");
+  session.query("get_by_id('g4826', E), toggle(E).");
   session.answer();
 }
 
