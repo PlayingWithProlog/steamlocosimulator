@@ -7,7 +7,10 @@
 <body>
 
 <div>
-  <button onclick="testToggle();" type="button">Toggle</button>
+  <form>
+    <button onclick="testToggle();" type="button">Toggle</button>
+    <input onchange="setGauge(this)" type="range" name="gauge" min="0" max="100">
+  </form>
 </div>
 
 <svg
@@ -800,6 +803,16 @@ session.consult("app.pl");
 
 const testToggle = () => {
   session.query("get_by_id('g4826', E), toggle_visibility(E).");
+  session.answer();
+}
+
+const setGauge = input => {
+  const percent = parseInt(input.value);
+  const ratio = percent / 100;
+  const translateY = (1 - ratio) * 130;
+  const scaleY = ratio;
+  const transform = `translate(0,${translateY}) scale(-1,${scaleY})`;
+  session.query(`get_by_id('rect4611', E), attr(E, transform, '${transform}').`);
   session.answer();
 }
 </script>
