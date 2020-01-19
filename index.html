@@ -8,8 +8,12 @@
 
 <div>
   <form>
-    <button onclick="testToggle();" type="button">Toggle</button>
-    <input onchange="setGauge(this)" type="range" name="gauge" min="0" max="100">
+    <div>
+      Gauge <input onchange="setGauge(this)" type="range" name="gauge" min="0" max="100">
+    </div>
+    <div>
+      Firedoor <input onchange="setFiredoor(this)" type="checkbox" name="firedoor">
+    </div>
   </form>
 </div>
 
@@ -316,8 +320,7 @@
     <g
        id="g4557"
        inkscape:label="doorclosed"
-       transform="matrix(0.71720922,0,0,0.67016155,183.90431,41.600597)"
-       style="display:inline">
+       transform="matrix(0.71720922,0,0,0.67016155,183.90431,41.600597)">
       <rect
          y="131.47409"
          x="-85.18293"
@@ -365,8 +368,7 @@
     <g
        id="g4573"
        transform="matrix(-0.71720922,0,0,0.67016155,68.195996,41.600597)"
-       inkscape:label="dooropen"
-       style="display:inline">
+       inkscape:label="dooropen">
       <circle
          r="26.124214"
          cy="-162.26091"
@@ -752,7 +754,7 @@
     <g
        id="g4826"
        inkscape:label="gagehand"
-       transform="matrix(0.48978631,0,0,0.4528607,189.01152,17.858565)">
+       transform="translate(190 13) scale(0.5 0.5)">
       <path
          inkscape:connector-curvature="0"
          id="path4811"
@@ -789,15 +791,32 @@
 <script id="app.pl" type="text/prolog">
 :- use_module(library(dom)).
 
+door(opened, E) :- get_by_id('g4573', E).
+door(closed, E) :- get_by_id('g4557', E).
+
+door_state(opened) :-
+  door(opened, O), show(O),
+  door(closed, C), hide(C).
+
+door_state(closed) :-
+  door(opened, O), hide(O),
+  door(closed, C), show(C).
+
 </script>
 
 <script type="text/javascript">
 const session = pl.create();
 session.consult("app.pl");
 
-const testToggle = () => {
-  session.query("get_by_id('g4826', E), toggle(E).");
-  session.answer();
+session.exec = function (query) {
+  this.query(query);
+  this.answer();
+};
+
+const setFiredoor = input => {
+  const open = input.checked;
+  const state = open ? "opened" : "closed";
+  session.exec(`door_state(${state}).`);
 }
 
 const setGauge = input => {
@@ -806,9 +825,11 @@ const setGauge = input => {
   const translateY = (1 - ratio) * 130;
   const scaleY = ratio;
   const transform = `translate(0,${translateY}) scale(-1,${scaleY})`;
-  session.query(`get_by_id('rect4611', E), attr(E, transform, '${transform}').`);
-  session.answer();
+  session.exec(`get_by_id('rect4611', E), attr(E, transform, '${transform}').`);
 }
+
+setGauge({ value: "50" });
+setFiredoor({ checked: false });
 </script>
 </body>
 </html>
